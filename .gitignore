@@ -1,7 +1,13 @@
 .settings/**
 .vscode/**
 .idea/**
-.target/**/**
 .classpath
 .DS_Store
 .project
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+*.iml
