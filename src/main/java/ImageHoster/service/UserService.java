@@ -1,7 +1,10 @@
 package ImageHoster.service;
 
 import ImageHoster.model.User;
+import ImageHoster.model.UserProfile;
 import ImageHoster.repository.UserRepository;
+
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpSession;
 
@@ -38,6 +41,28 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    public boolean isValidUserProfile(UserProfile userProfile) {
+        return (userProfile.getFullName() != null && userProfile.getFullName().length() > 0
+                && userProfile.getEmailAddress() != null && userProfile.getEmailAddress().length() > 0
+                && userProfile.getMobileNumber() != null && userProfile.getMobileNumber().length() > 0);
+
+    }
+
+    public boolean isValidUser(User user) {
+        return user.getUsername() != null && user.getUsername().length() > 0 && user.getPassword() != null
+                && user.getPassword().length() > 0 && isValidUserProfile(user.getProfile());
+    }
+
+    public boolean isValidPassword(String password) {
+        Pattern numberPattern = Pattern.compile(".*\\d.*");
+        Pattern alphaPattern = Pattern.compile(".*[a-zA-Z].*");
+        Pattern symbolPattern = Pattern.compile(".*\\W.*");
+
+        // Pattern pattern = Pattern.compile("((?=.*\\d)((?=.*[a-zA-Z]))(?=.*\\W))");
+        return password != null && password.length() >= 3 && numberPattern.matcher(password).matches()
+                && alphaPattern.matcher(password).matches() && symbolPattern.matcher(password).matches();
     }
 
     public boolean isLogginUser(User imageUser, HttpSession session) {
