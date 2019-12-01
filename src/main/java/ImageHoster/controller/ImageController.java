@@ -5,6 +5,8 @@ import ImageHoster.model.Tag;
 import ImageHoster.model.User;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
+import ImageHoster.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +28,9 @@ public class ImageController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private UserService userService;
 
     // This method displays all the images in the user home page after successful
     // login
@@ -51,10 +56,15 @@ public class ImageController {
     // Here a list of tags is added in the Model type object
     // this list is then sent to 'images/image.html' file and the tags are displayed
     @RequestMapping("/images/{id}")
-    public String showImage(@PathVariable("id") Integer id, Model model) {
+    public String showImage(@PathVariable("id") Integer id,
+            @RequestParam(name = "editError", required = false, defaultValue = "false") Boolean hasEditError,
+            @RequestParam(name = "deleteError", required = false, defaultValue = "false") Boolean hasDeleteError,
+            Model model) {
         Image image = imageService.getImage(id);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("editError", hasEditError);
+        model.addAttribute("deleteError", hasDeleteError);
         return "images/image";
     }
 
@@ -114,13 +124,20 @@ public class ImageController {
     // This string is then displayed by 'edit.html' file as previous tags of an
     // image
     @RequestMapping(value = "/editImage")
-    public String editImage(@RequestParam("imageId") Integer imageId, Model model) {
+    public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session) {
         Image image = imageService.getImage(imageId);
+        User imageOwner = image.getUser();
 
-        String tags = convertTagsToString(image.getTags());
-        model.addAttribute("image", image);
-        model.addAttribute("tags", tags);
-        return "images/edit";
+        if (this.userService.isLogginUser(imageOwner, session)) {
+            String tags = convertTagsToString(image.getTags());
+            model.addAttribute("image", image);
+            model.addAttribute("tags", tags);
+            return "images/edit";
+
+        } else {
+            return "redirect:/images/" + imageId + "?" + "editError=" + true;
+        }
+
     }
 
     // This controller method is called when the request pattern is of type
@@ -171,9 +188,18 @@ public class ImageController {
     // id of the image to be deleted
     // Looks for a controller method with request mapping of type '/images'
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
-    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId) {
-        imageService.deleteImage(imageId);
-        return "redirect:/images";
+    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, Model model, HttpSession session) {
+        Image image = this.imageService.getImage(imageId);
+        User imageOwner = image.getUser();
+
+        if (this.userService.isLogginUser(imageOwner, session)) {
+
+            imageService.deleteImage(imageId);
+            return "redirect:/images";
+        } else {
+            return "redirect:/images/" + imageId + "?" + "deleteError=" + true;
+        }
+
     }
 
     // This method converts the image to Base64 format
