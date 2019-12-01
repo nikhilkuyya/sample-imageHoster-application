@@ -1,4 +1,4 @@
-/*
+
 package ImageHoster.controller;
 
 import ImageHoster.service.ImageService;
@@ -28,12 +28,12 @@ public class HomeControllerTest {
     @MockBean
     private ImageService imageService;
 
-    //This test checks the controller logic when the user sends the GET request to get all images in the application and checks whether the logic returns the html file 'index.html'
+    // This test checks the controller logic when the user sends the GET request to
+    // get all images in the application and checks whether the logic returns the
+    // html file 'index.html'
     @Test
     public void getAllImages() throws Exception {
-        this.mockMvc.perform(get("/"))
-                .andExpect(view().name("index"))
+        this.mockMvc.perform(get("/")).andExpect(view().name("index"))
                 .andExpect(content().string(containsString("Image Hoster")));
     }
 }
-*/
