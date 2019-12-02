@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import ImageHoster.service.UserService;
@@ -31,6 +33,9 @@ public class ImageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     // This method displays all the images in the user home page after successful
     // login
@@ -63,6 +68,7 @@ public class ImageController {
         Image image = imageService.getImage(id);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments", image.getComments());
         model.addAttribute("editError", hasEditError);
         model.addAttribute("deleteError", hasDeleteError);
         return "images/image";
@@ -200,6 +206,20 @@ public class ImageController {
             return "redirect:/images/" + imageId + "?" + "deleteError=" + true;
         }
 
+    }
+
+    @RequestMapping(value = "/image/{id}/comments", method = RequestMethod.POST)
+    public String addComment(@PathVariable("id") Integer imageId, @RequestParam("comment") String comment, Model model,
+            HttpSession session) {
+
+        User user = (User) session.getAttribute("loggeduser");
+        Comment newComment = new Comment();
+        newComment.setText(comment);
+        newComment.setCommentedUser(user);
+        newComment.setImageCommentedOn(imageService.getImage(imageId));
+        newComment.setCreatedDate(new Date());
+        this.commentService.addComment(newComment);
+        return "redirect:/images/" + imageId;
     }
 
     // This method converts the image to Base64 format
