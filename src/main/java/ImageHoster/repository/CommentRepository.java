@@ -4,13 +4,10 @@ import org.springframework.stereotype.Repository;
 
 import ImageHoster.model.Comment;
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.TypedQuery;
 
 @Repository
 public class CommentRepository {
