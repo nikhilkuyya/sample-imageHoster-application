@@ -1,6 +1,5 @@
-/*
-package ImageHoster.controller;
 
+package ImageHoster.controller;
 
 import ImageHoster.model.Image;
 import ImageHoster.model.User;
@@ -34,7 +33,9 @@ public class CommentControllerTest {
     @MockBean
     private ImageService imageService;
 
-    //This test checks controller logic for comment and checks whether the controller logic redirects to the request handling method with request mapping of type "/images/{imageId}/{title}"
+    // This test checks controller logic for comment and checks whether the
+    // controller logic redirects to the request handling method with request
+    // mapping of type "/images/{imageId}/{title}"
     @Test
     public void createComment() throws Exception {
         User user = new User();
@@ -51,7 +52,6 @@ public class CommentControllerTest {
         session = new MockHttpSession();
         session.setAttribute("loggeduser", user);
 
-
         Image image = new Image();
         image.setId(1);
         image.setTitle("new");
@@ -59,10 +59,8 @@ public class CommentControllerTest {
 
         Mockito.when(imageService.getImage(Mockito.anyInt())).thenReturn(image);
 
-        this.mockMvc.perform(post("/image/1/new/comments")
-                .param("comment", "This comment is for testing purpose")
-                .session(session))
+        this.mockMvc.perform(
+                post("/image/1/new/comments").param("comment", "This comment is for testing purpose").session(session))
                 .andExpect(redirectedUrl("/images/1/new"));
     }
 }
-*/
